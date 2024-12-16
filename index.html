@@ -4,27 +4,39 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Unity WebGL Player | Wyvern Motion</title>
-    <script type="text/javascript" src="windowResize.js"></script>
+    <style>
+      /* ページ全体の設定 */
+      body {
+        margin: 0;
+        overflow: hidden; /* スクロールバーを非表示に */
+      }
+
+      /* Unityのキャンバスがブラウザ全体にフィットするように */
+      #unity-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #231F20;
+        object-fit: contain; /* 比率を維持して中央に収める */
+      }
+    </style>
   </head>
-  <body style="text-align: center; padding: 0; border: 0; margin: 0;">
-    <canvas id="unity-canvas" width=720 height=1280 tabindex="-1" style="width: 720px; height: 1280px; background: #231F20"></canvas>
+  <body>
+    <canvas id="unity-canvas" tabindex="-1"></canvas>
+
     <script src="Build/Wyvern_motion_web.loader.js"></script>
     <script>
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
+        // モバイルデバイスの場合、ビューポートを設定
         var meta = document.createElement('meta');
         meta.name = 'viewport';
         meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
         document.getElementsByTagName('head')[0].appendChild(meta);
-
-        var canvas = document.querySelector("#unity-canvas");
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-        canvas.style.position = "fixed";
-
-        document.body.style.textAlign = "left";
       }
 
+      // Unityインスタンスを作成
       createUnityInstance(document.querySelector("#unity-canvas"), {
         dataUrl: "Build/Wyvern_motion_web.data",
         frameworkUrl: "Build/Wyvern_motion_web.framework.js",
@@ -33,8 +45,35 @@
         companyName: "Universit$00E4t Altridaz",
         productName: "Wyvern Motion",
         productVersion: "0.1",
-        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
-        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+        matchWebGLToCanvasSize: false, // WebGLとDOMのサイズは別々に制御
+      }).then((unityInstance) => {
+        // Unityのインスタンスが準備できたら、サイズを調整する
+        function adjustCanvasSize() {
+          const canvas = document.getElementById("unity-canvas");
+          const windowWidth = window.innerWidth;
+          const windowHeight = window.innerHeight;
+
+          // 比率を固定（例: 720x1280の場合）
+          const aspectRatio = 720 / 1280;
+
+          let newWidth = windowWidth;
+          let newHeight = windowHeight;
+
+          if (windowWidth / windowHeight > aspectRatio) {
+            newWidth = windowHeight * aspectRatio;
+          } else {
+            newHeight = windowWidth / aspectRatio;
+          }
+
+          canvas.style.width = newWidth + "px";
+          canvas.style.height = newHeight + "px";
+        }
+
+        // 初期サイズ調整
+        adjustCanvasSize();
+
+        // ウィンドウリサイズ時にサイズを調整
+        window.addEventListener("resize", adjustCanvasSize);
       });
     </script>
   </body>
