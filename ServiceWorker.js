@@ -1,4 +1,4 @@
-const cacheName = "Universität Altridaz-Wyvern Motion-0.11";
+const cacheName = "Universität Altridaz-Wyvern Motion-0.12";
 const contentToCache = [
     "Build/Wyvern_motion_web.loader.js",
     "Build/Wyvern_motion_web.framework.js",
